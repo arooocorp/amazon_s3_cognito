@@ -28,14 +28,6 @@ public class SwiftAmazonS3CognitoPlugin: NSObject, FlutterPlugin {
           }
       }
 
-      public func nameGenerator() -> String{
-          let date = Date()
-          let formatter = DateFormatter()
-          formatter.dateFormat = "ddMMyyyy"
-          let result = formatter.string(from: date)
-          return "IMG" + result + String(Int64(date.timeIntervalSince1970 * 1000)) + "jpeg"
-      }
-
 
       func uploadImageForRegion(_ call: FlutterMethodCall, result: @escaping FlutterResult){
                 let arguments = call.arguments as? NSDictionary
@@ -47,6 +39,7 @@ public class SwiftAmazonS3CognitoPlugin: NSObject, FlutterPlugin {
                 let subRegion = arguments!["subRegion"] as? String
 
               let contentTypeParam = arguments!["contentType"] as? String
+              let acl = arguments!["acl"] as? Int64
 
 
                 print("region" + region!)
