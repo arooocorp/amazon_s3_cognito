@@ -44,6 +44,8 @@ class AmazonS3CognitoPlugin :FlutterPlugin,MethodCallHandler, ActivityAware , Se
         val prefix = call.argument<String>("prefix")
         val imageDataListJson = call.argument<String>("imageDataList")
         var needProgressUpdateAlso = call.argument<Boolean>("needProgressUpdateAlso")
+        val contentType = call.argument<String>("contentType")
+        val accessControl = call.argument<Int>("accessControl")
 
 
 
@@ -56,7 +58,7 @@ class AmazonS3CognitoPlugin :FlutterPlugin,MethodCallHandler, ActivityAware , Se
 
                 val file = File(filePath)
                 try {
-                    awsRegionHelper = AwsRegionHelper(context, bucket!!, identity!!, region!!, subRegion!!)
+                    awsRegionHelper = AwsRegionHelper(context, bucket!!, identity!!, region!!, subRegion!!, contentType!!, accessControl!!)
                     awsRegionHelper!!.uploadImage(file, fileName!!,imageUploadFolder, object : AwsRegionHelper.OnUploadCompleteListener {
                         override fun onFailed() {
                             System.out.println("\n❌ upload failed")
@@ -84,7 +86,7 @@ class AmazonS3CognitoPlugin :FlutterPlugin,MethodCallHandler, ActivityAware , Se
                 var imageUploadFolder = call.argument<String>("imageUploadFolder")
 
 
-                awsRegionHelper = AwsRegionHelper(context, bucket!!, identity!!, region!!, subRegion!!)
+                awsRegionHelper = AwsRegionHelper(context, bucket!!, identity!!, region!!, subRegion!!, contentType!!, accessControl!!)
                 awsRegionHelper!!.deleteImage(fileName!!, imageUploadFolder,object : AwsRegionHelper.OnUploadCompleteListener{
 
                     override fun onFailed() {
@@ -131,7 +133,7 @@ class AmazonS3CognitoPlugin :FlutterPlugin,MethodCallHandler, ActivityAware , Se
                 }
                 awsMultiImageRegionHelper = AwsMultipleFileUploadHelper(
                         context,
-                        bucket!!,identity!!, region!!, subRegion!!,list,imageUploadListener,needProgressUpdateAlso )
+                        bucket!!,identity!!, region!!, subRegion!!,  contentType!!, accessControl!!, list, imageUploadListener, needProgressUpdateAlso)
 
                 awsMultiImageRegionHelper?.uploadImages()
                 result.success("Uploaded started successfully")

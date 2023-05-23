@@ -14,8 +14,14 @@ class AmazonS3Cognito {
     return version;
   }
 
-  static Future<String?> upload(String bucket, String identity, String region,
-      String subRegion, ImageData imageData,
+  static Future<String?> upload(
+      String bucket,
+      String identity,
+      String region,
+      String subRegion,
+      ImageData imageData,
+      String contentType,
+      S3AccessControl accessControl,
       {bool needMultipartUpload = false}) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'filePath': imageData.filePath,
@@ -26,6 +32,8 @@ class AmazonS3Cognito {
       'region': region,
       'subRegion': subRegion,
       'uniqueId': imageData.uniqueId,
+      'contentType': contentType,
+      'accessControl': accessControl.index,
 
       /// needMultipartUpload - use this parameter when your files are
       /// very large and file uploads take more than 1 hour time
@@ -64,6 +72,8 @@ class AmazonS3Cognito {
       String region,
       String subRegion,
       List<ImageData> imageData,
+      String contentType,
+      S3AccessControl accessControl,
       bool needProgressUpdateAlso,
       {bool needMultipartUpload = false}) async {
     String imageDataList = json.encode(imageData);
@@ -74,6 +84,8 @@ class AmazonS3Cognito {
       'region': region,
       'subRegion': subRegion,
       'imageDataList': imageDataList,
+      'contentType': contentType,
+      'accessControl': accessControl.index,
       'needProgressUpdateAlso': needProgressUpdateAlso,
 
       /// needMultipartUpload - use this parameter when your files are
@@ -86,4 +98,15 @@ class AmazonS3Cognito {
         await _channel.invokeMethod('uploadImages', params);
     return imagePath;
   }
+}
+
+enum S3AccessControl {
+  unknown,
+  private,
+  publicRead,
+  publicReadWrite,
+  authenticatedRead,
+  awsExecRead,
+  bucketOwnerRead,
+  bucketOwnerFullControl
 }

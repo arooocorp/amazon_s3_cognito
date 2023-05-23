@@ -297,7 +297,7 @@ class AwsMultiImageUploadHelper{
             // Upload progress block
             let expression = AWSS3TransferUtilityUploadExpression()
 
-
+            expression.setValue("public-read", forRequestHeader: "x-amz-acl")
             expression.progressBlock = {(task, awsProgress) in
                 guard let uploadProgress = progress else { return }
 
@@ -380,6 +380,7 @@ class AwsMultiImageUploadHelper{
 
         let uploadExpression = AWSS3TransferUtilityMultiPartUploadExpression()
 
+        uploadExpression.setValue("public-read", forRequestHeader: "x-amz-acl")
         uploadExpression.progressBlock = {(task, awsProgress) in
             guard let uploadProgress = progress else { return }
 

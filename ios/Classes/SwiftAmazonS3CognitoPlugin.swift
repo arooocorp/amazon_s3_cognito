@@ -48,8 +48,6 @@ private static  var imageUploadStreamHandler = ImageUploadStreamHandler()
 
         let subRegion = arguments!["subRegion"] as! String
 
-
-
         let contentTypeParam = arguments!["contentType"] as? String
 
         var uniqueId = arguments!["uniqueId"] as? String

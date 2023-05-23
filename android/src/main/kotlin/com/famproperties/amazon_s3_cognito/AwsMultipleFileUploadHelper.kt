@@ -9,12 +9,16 @@ import com.amazonaws.mobileconnectors.s3.transferutility.*
 import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.amazonaws.services.s3.model.ObjectMetadata
 
 import java.io.File
 
 class AwsMultipleFileUploadHelper(private val context: Context,
                                   private val BUCKET_NAME: String, private val IDENTITY_POOL_ID: String,
-                                  private val REGION: String, private val SUB_REGION: String, private var imagesData: List<ImageData>, private val imageUploadListener: ImageUploadListener, private var needProgressUpdateAlso:Boolean) {
+                                  private val REGION: String, private val SUB_REGION: String, 
+                                  private val CONTENT_TYPE: String, private val ACCESS_CONTROL: Int,
+                                  private var imagesData: List<ImageData>, private val imageUploadListener: ImageUploadListener, private var needProgressUpdateAlso:Boolean) {
 
     private var transferUtility: TransferUtility
     private var region1: Regions = Regions.DEFAULT_REGION
@@ -82,7 +86,21 @@ class AwsMultipleFileUploadHelper(private val context: Context,
 
                 }
 
-                val transferObserver = transferUtility.upload(BUCKET_NAME, key, file)
+                val objectMetadata = ObjectMetadata()
+                objectMetadata.contentType = CONTENT_TYPE
+
+                val acl: CannedAccessControlList = when (ACCESS_CONTROL) {
+                    1 -> CannedAccessControlList.Private
+                    2 -> CannedAccessControlList.PublicRead
+                    3 -> CannedAccessControlList.PublicReadWrite
+                    4 -> CannedAccessControlList.AuthenticatedRead
+                    5 -> CannedAccessControlList.AwsExecRead
+                    6 -> CannedAccessControlList.BucketOwnerRead
+                    7 -> CannedAccessControlList.BucketOwnerFullControl
+                    else -> CannedAccessControlList.PublicRead
+                }
+
+                val transferObserver = transferUtility.upload(BUCKET_NAME, key, file, objectMetadata, acl)
                 imageData.isUploadInProgress = true
                 transferObserver.setTransferListener(object : TransferListener {
                     override fun onStateChanged(id: Int, state: TransferState) {
